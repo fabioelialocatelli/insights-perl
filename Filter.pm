@@ -1,4 +1,4 @@
-package DynaReporter;
+package Filter;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ sub mergeLogs {
     my $combinedWriter;
     my $logReader;
 
-    my @logFiles = glob('*.log');
+    my @logFiles = glob('*.log *.txt');
     my $foundLogs = scalar(@logFiles);
 
     if($foundLogs != 0){
@@ -181,20 +181,22 @@ sub generateList {
     print $presentationWriter $documentDesigner->{indentBlock}. "font-family: " . $documentDesigner->{fontFamily};
     print $presentationWriter $documentDesigner->{closeBlock};
 
-    print $presentationWriter $documentDesigner->{indentSelector} . "td" . $documentDesigner->{openBlock};
+    print $presentationWriter $documentDesigner->{indentSelector} . "td, " . "th" . $documentDesigner->{openBlock};
+    print $presentationWriter $documentDesigner->{indentBlock}. "text-align: " . $documentDesigner->{textAlign};
     print $presentationWriter $documentDesigner->{indentBlock}. "padding: " . $documentDesigner->{padding};
     print $presentationWriter $documentDesigner->{closeBlock};
 
     print $presentationWriter $documentDesigner->{indentSelector} . "table" . $documentDesigner->{openBlock};
     print $presentationWriter $documentDesigner->{indentBlock}. "table-layout: " . $documentDesigner->{tableLayout};
+    print $presentationWriter $documentDesigner->{indentBlock}. "width: " . $documentDesigner->{tableWidth};
     print $presentationWriter $documentDesigner->{indentBlock}. "margin: " . $documentDesigner->{margin};
     print $presentationWriter $documentDesigner->{closeBlock};
 
-    print $presentationWriter $documentDesigner->{indentSelector} . "td, " . "table" . $documentDesigner->{openBlock};
+    print $presentationWriter $documentDesigner->{indentSelector} . "td, " . "th, " . "table" . $documentDesigner->{openBlock};
     print $presentationWriter $documentDesigner->{indentBlock}. "border-style: " . $documentDesigner->{borderStyle};
     print $presentationWriter $documentDesigner->{indentBlock}. "border-width: " . $documentDesigner->{borderWidth};
     print $presentationWriter $documentDesigner->{indentBlock}. "border-collapse: " . $documentDesigner->{borderCollapse};
-    print $presentationWriter $documentDesigner->{closeBlock};
+    print $presentationWriter $documentDesigner->{closeBlock};    
 
     print $presentationWriter $documentFormatter->{closeStyle};
     print $presentationWriter $documentFormatter->{closeHead};
@@ -217,9 +219,13 @@ sub generateList {
             my $listEntry = substr($reportEntry, $indexLeft, $stringLength);
 
             if(grep {/@/} $listEntry){
+
                 my @truncatedIdentifier = split('@', $listEntry);
-                $listEntry = shift(@truncatedIdentifier);
-                push(@userAuthentications, $listEntry);
+                my $domain = pop(@truncatedIdentifier);
+                my $user = pop(@truncatedIdentifier);
+                my $recomposedEntry = join('@', $user, $domain);
+
+                push(@userAuthentications, $recomposedEntry);
             }
         }
     }
@@ -231,9 +237,6 @@ sub generateList {
     }
 
     print $presentationWriter $documentFormatter->{closeUnorderedList};
-
-    print $presentationWriter $documentFormatter->{closeBody};
-    print $presentationWriter $documentFormatter->{closeHtml};
 
     close $presentationWriter;
     close $reportReader;
@@ -284,7 +287,10 @@ sub countAuthentications {
         print $presentationWriter $documentFormatter->{openHeader} . "Authentication Breakdown" . $documentFormatter->{closeHeader};
 
         print $presentationWriter $documentFormatter->{openTable};
+        print $presentationWriter $documentFormatter->{openTableRow};
+        print $presentationWriter $documentFormatter->{openTableHeader} . "User Email" . $documentFormatter->{closeTableHeader};
         print $presentationWriter $documentFormatter->{openTableHeader} . "Successful Attempts" . $documentFormatter->{closeTableHeader};
+        print $presentationWriter $documentFormatter->{closeTableRow};
 
         foreach(@userIdentifiers){
             my $userIdentifier;
@@ -302,7 +308,10 @@ sub countAuthentications {
         print $presentationWriter $documentFormatter->{closeTable};
 
         print $presentationWriter $documentFormatter->{openTable};
+        print $presentationWriter $documentFormatter->{openTableRow};
+        print $presentationWriter $documentFormatter->{openTableHeader} . "User Email" . $documentFormatter->{closeTableHeader};
         print $presentationWriter $documentFormatter->{openTableHeader} . "Unsuccessful Attempts" . $documentFormatter->{closeTableHeader};
+        print $presentationWriter $documentFormatter->{closeTableRow};
 
         foreach(@userIdentifiers){
             my $userIdentifier;
@@ -335,8 +344,8 @@ sub parseMarkup {
 
     my @fileRecords;
     my @alphabeticallySortedRecords;
-    my @filesLog = glob('*.log');
-    my @filesMarkup = glob('*.xml');
+    my @filesLog = glob('*.log *.txt');
+    my @filesMarkup = glob('*.xml *.xhtml');
 
     my $this = shift();
     my $fileCSV = $this->{fileUsers};
@@ -442,20 +451,20 @@ sub filter {
 
 sub clearMarkup {
 
-    my @htmlFiles = glob('*.html');
-    my $foundReports = scalar(@htmlFiles);
+    my @markupFiles = glob('*.html');
+    my $foundReports = scalar(@markupFiles);
 
     if($foundReports != 0){
-        unlink(@htmlFiles);
+        unlink(@markupFiles);
     }
 }
 
 sub clearSheet {
-    my @filesCSV = glob('*.csv');
-    my $foundSheets = scalar(@filesCSV);
+    my @commaFiles = glob('*.csv');
+    my $foundSheets = scalar(@commaFiles);
 
     if($foundSheets != 0){
-        unlink(@filesCSV);
+        unlink(@commaFiles);
     }
 }
 

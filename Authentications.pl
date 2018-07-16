@@ -1,15 +1,12 @@
 use strict;
 use warnings;
-use DynaReporter;
+use Filter;
 
-use List::MoreUtils 'true';
-use List::MoreUtils 'uniq';
-
-my $dynaReporter = DynaReporter->new({
+my $filter = Filter->new({
   reportingPeriod => pop(@ARGV)
 });
 
-$dynaReporter->mergeLogs();
-$dynaReporter->generateReport();
-$dynaReporter->generateList();
-$dynaReporter->countAuthentications();
+$filter->mergeLogs();
+$filter->generateReport();
+$filter->generateList();
+$filter->countAuthentications();

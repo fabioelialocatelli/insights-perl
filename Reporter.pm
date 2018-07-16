@@ -29,7 +29,7 @@ sub mergeLogs{
     my $combinedWriter;
     my $logReader;
 
-    my @logFiles = glob('*.log');
+    my @logFiles = glob('*.log *.txt');
     my $foundLogs = scalar(@logFiles);
     my $scriptDirectory = getcwd();
 

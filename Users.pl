@@ -1,11 +1,11 @@
 use strict;
 use warnings;
-use DynaReporter;
+use Filter;
 
-my $dynaReporter = DynaReporter->new({
+my $filter = Filter->new({
   reportingPeriod => pop(@ARGV)
 });
 
-$dynaReporter->mergeLogs();
-$dynaReporter->parseMarkup();
-$dynaReporter->clearMarkup();
+$filter->mergeLogs();
+$filter->parseMarkup();
+$filter->clearMarkup();
