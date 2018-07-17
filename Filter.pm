@@ -342,13 +342,13 @@ sub parseMarkup {
     my $markupWriter;
     my $logReader;
 
-    my @fileRecords;
+    my @userEntries;
     my @alphabeticallySortedRecords;
     my @filesLog = glob('*.log *.txt');
     my @filesMarkup = glob('*.xml *.xhtml');
 
     my $this = shift();
-    my $fileCSV = $this->{fileUsers};
+    my $fileRecords = $this->{fileUsers};
     my $fileLogs = $this->{fileCombined};
 
     my $foundMarkups = scalar(@filesMarkup);
@@ -385,26 +385,21 @@ sub parseMarkup {
                             my $countSuccessful = scalar(@authenticationSuccessful);
                             my $countUnsuccessful = scalar(@authenticationUnsuccessful);
 
-                            if($countSuccessful == 0){
-                                $countSuccessful =~ tr/0/-/;
-                            }
-
-                            if($countUnsuccessful == 0){
+                            unless($countSuccessful == 0){
                                 $countUnsuccessful =~ tr/0/-/;
-                            }
-
-                            push (@fileRecords, $userName . "," . $userMailCaseLower . "," . $countSuccessful . "," . $countUnsuccessful . "\n");
+                                push (@userEntries, $userName . "," . $userMailCaseLower . "," . $countSuccessful . "," . $countUnsuccessful . "\n");
+                            }                           
                         }
                     }
                 }
             }
 
-            @alphabeticallySortedRecords = sort(@fileRecords);
+            @alphabeticallySortedRecords = sort(@userEntries);
             close $markupReader;
         }
 
-        open ($markupWriter, '>:encoding(UTF-8)', $fileCSV)
-        or die "Could not open $fileCSV for writing...";
+        open ($markupWriter, '>:encoding(UTF-8)', $fileRecords)
+        or die "Could not open $fileRecords for writing...";
 
         foreach (@alphabeticallySortedRecords){
             print $markupWriter $_;
