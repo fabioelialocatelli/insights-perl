@@ -1,3 +1,10 @@
+=pod
+=head1 Fabio Elia Locatelli
+=head2 fabioelialocatelli@yandex.com
+=head3 +64 21 0816 1038
+=encoding utf8
+=cut
+
 package Filter;
 
 use strict;
@@ -8,6 +15,15 @@ use List::MoreUtils 'uniq';
 
 use Designer;
 use Formatter;
+
+=pod
+=item new()
+
+The class constructor.
+File names are predefined, whereas the reporting period
+is parsed from the command line.
+
+=cut
 
 sub new {
     my ($object, $attributes) = @_;
@@ -23,6 +39,16 @@ sub new {
 
     return $this;
 }
+
+=pod
+=item mergeLogs()
+
+The function responsible for log merging.
+All files having specific extensions are parsed,
+afterwards they are merged into an additional one
+for further processing.
+
+=cut
 
 sub mergeLogs {
 
@@ -77,6 +103,15 @@ sub mergeLogs {
         exit;
     }
 }
+
+=pod
+=item generateReport()
+
+The function responsible for report generation.
+It generates a HTML file containing authentication events
+already categorised into successful and unsuccessful.
+
+=cut
 
 sub generateReport {
 
@@ -148,6 +183,15 @@ sub generateReport {
     close $reportWriter;
     close $combinedReader;
 }
+
+=pod
+=item generateList()
+
+The function responsible for list generation.
+It generates a HTML file containg the emails of users
+that have authenticated during the reporting period.
+
+=cut
 
 sub generateList {
 
@@ -241,6 +285,17 @@ sub generateList {
     close $presentationWriter;
     close $reportReader;
 }
+
+=pod
+=item countAuthentications()
+
+The function responsible for authetication breakdown.
+It generates a HTML file containing separate tables containing
+successful and unsuccessful authentication attempts.
+Columns are user email and the corresponding amount of either successful
+or unsuccessful authentications.
+
+=cut
 
 sub countAuthentications {
 
@@ -336,6 +391,17 @@ sub countAuthentications {
     close $reportReader;
 }
 
+=pod
+=item parseMarkup()
+
+The function responsible for spreadsheet generation.
+It generates a CSV file that associates user names, emails
+and authentications count. Note that names are obtained from a
+separate markup document and the resulting file will include only
+the ones that have authenticated during the reporting period.
+
+=cut
+
 sub parseMarkup {
 
     my $markupReader;
@@ -365,8 +431,8 @@ sub parseMarkup {
 
                     if($markupEntry !~ /admin/){
 
-                        my $userName = filter($markupEntry, "fullname", "userid", "\"");
-                        my $userMail = filter($markupEntry, "mail", "useldap", "\"");
+                        my $userName = filterMarkup($markupEntry, "fullname", "userid", "\"");
+                        my $userMail = filterMarkup($markupEntry, "mail", "useldap", "\"");
                         my $userMailCaseLower = lc($userMail);
 
                         open ($logReader, '<:encoding(UTF-8)', $fileLogs)
@@ -416,7 +482,15 @@ sub parseMarkup {
     }
 }
 
-sub filter {
+=pod
+=item filterMarkup()
+
+The function responsible for filtering user names and email addresses
+out of the markup document. It is used by parseMarkup().
+
+=cut
+
+sub filterMarkup {
 
     my $stringInput = $_[0];
     my $filterBeginning = $_[1];
@@ -444,6 +518,13 @@ sub filter {
     return $stringRefined;
 }
 
+=pod
+=item clearMarkup()
+
+Minor function invoked by others to purge HTML files.
+
+=cut
+
 sub clearMarkup {
 
     my @markupFiles = glob('*.html');
@@ -453,6 +534,13 @@ sub clearMarkup {
         unlink(@markupFiles);
     }
 }
+
+=pod
+=item clearSheet()
+
+Minor function invoked by others to purge CSV files.
+
+=cut
 
 sub clearSheet {
     my @commaFiles = glob('*.csv');

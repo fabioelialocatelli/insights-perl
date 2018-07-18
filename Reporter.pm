@@ -1,3 +1,10 @@
+=pod
+=head1 Fabio Elia Locatelli
+=head2 fabioelialocatelli@yandex.com
+=head3 +64 21 0816 1038
+=encoding utf8
+=cut
+
 package Reporter;
 
 use strict;
@@ -8,6 +15,15 @@ use File::Path;
 
 use Designer;
 use Formatter;
+
+=pod
+=item new()
+
+The class constructor.
+File names are predefined, whereas reporting period
+and tag to be filtered are parsed from the command line.
+
+=cut
 
 sub new {
     my ($object, $attributes) = @_;
@@ -23,6 +39,16 @@ sub new {
 
     return $this;
 }
+
+=pod
+=item mergeLogs()
+
+The function responsible for log merging.
+All files having specific extensions are parsed,
+afterwards they are merged into an additional one
+for further processing.
+
+=cut
 
 sub mergeLogs{
 
@@ -88,6 +114,15 @@ sub mergeLogs{
         exit;
     }
 }
+
+=pod
+=item generateReport()
+
+The function responsible for report generation.
+A HTML file is generated and all entries matching
+the tag specified on the command line are appended.
+
+=cut
 
 sub generateReport{
 
